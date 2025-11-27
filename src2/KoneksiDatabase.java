@@ -1,5 +1,6 @@
 import java.sql.*;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList; // Import untuk format tanggal
 
 public class KoneksiDatabase {
 
@@ -14,10 +15,13 @@ public class KoneksiDatabase {
     // =============================
     public void initialize() {
         try {
-            conn = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println("Koneksi MySQL Berhasil!");
+            // Cek jika driver belum di-load (Opsional tapi bagus untuk kestabilan)
+            if (conn == null || conn.isClosed()) {
+                conn = DriverManager.getConnection(URL, USER, PASS);
+                System.out.println("✅ Koneksi MySQL Berhasil!");
+            }
         } catch (Exception e) {
-            System.out.println("Koneksi Gagal: " + e.getMessage());
+            System.out.println("❌ Koneksi Gagal: " + e.getMessage());
         }
     }
 
@@ -26,6 +30,8 @@ public class KoneksiDatabase {
     // =============================
     public static boolean register(String username, String password) {
         try {
+            checkConnection(); // Pastikan koneksi hidup
+
             // cek username sudah ada atau belum
             String check = "SELECT * FROM users WHERE username=?";
             PreparedStatement psCheck = conn.prepareStatement(check);
@@ -56,6 +62,8 @@ public class KoneksiDatabase {
     // =============================
     public static int checkLogin(String username, String password) {
         try {
+            checkConnection(); // Pastikan koneksi hidup
+
             String sql = "SELECT * FROM users WHERE username=? AND password=?";
             PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -74,52 +82,81 @@ public class KoneksiDatabase {
         return -1; // gagal login
     }
 
-    // =============================
-    // SIMPAN SCORE
-    // =============================
-    public void saveScore(int userId, int score) {
+    // =================================================
+    // SIMPAN SCORE (UPDATE: Tambah Level)
+    // =================================================
+    public void saveScore(int userId, int level, int score) {
         try {
-            String sql = "INSERT INTO scores (user_id, score) VALUES (?, ?)";
+            checkConnection();
+
+            // Insert USER_ID, LEVEL, dan SCORE (Waktu otomatis dari MySQL)
+            String sql = "INSERT INTO scores (user_id, level, score) VALUES (?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, userId);
-            ps.setInt(2, score);
+            ps.setInt(2, level);
+            ps.setInt(3, score);
 
             ps.executeUpdate();
-            System.out.println("Score tersimpan!");
+            System.out.println("✅ Score & Level tersimpan!");
 
         } catch (Exception e) {
-            System.out.println("Save Score Error: " + e.getMessage());
+            System.out.println("❌ Save Score Error: " + e.getMessage());
         }
     }
 
-    // =============================
-    // AMBIL LEADERBOARD
-    // =============================
+    // =================================================
+    // AMBIL LEADERBOARD (UPDATE: 4 Kolom + Format Waktu)
+    // =================================================
     public ArrayList<String[]> getLeaderboard() {
         ArrayList<String[]> list = new ArrayList<>();
 
         try {
-            String sql =
-                "SELECT users.username, scores.score " +
-                "FROM scores " +
-                "JOIN users ON scores.user_id = users.id " +
-                "ORDER BY scores.score DESC LIMIT 10";
+            checkConnection();
+
+            // Query gabungan (JOIN) untuk ambil Nama, Level, Score, dan Waktu
+            String sql = 
+                "SELECT u.username, s.level, s.score, s.score_date " +
+                "FROM scores s " +
+                "JOIN users u ON s.user_id = u.id " +
+                "ORDER BY s.score DESC LIMIT 10";
 
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
+            // Format tanggal (Contoh: 28-Nov 14:30)
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM HH:mm");
+
             while (rs.next()) {
-                list.add(new String[]{
-                        rs.getString("username"),
-                        String.valueOf(rs.getInt("score"))
-                });
+                String nama = rs.getString("username");
+                String lvl = String.valueOf(rs.getInt("level"));
+                String skor = String.valueOf(rs.getInt("score"));
+                
+                // Ambil tanggal dan format jadi String
+                Timestamp tgl = rs.getTimestamp("score_date");
+                String waktu = (tgl != null) ? sdf.format(tgl) : "-";
+
+                // Masukkan ke list (Array isi 4 data)
+                list.add(new String[]{nama, lvl, skor, waktu});
             }
 
         } catch (Exception e) {
-            System.out.println("Leaderboard Error: " + e.getMessage());
+            System.out.println("❌ Leaderboard Error: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return list;
+    }
+
+    // Helper untuk memastikan koneksi tidak null saat dipanggil static
+    private static void checkConnection() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                // Buat instance baru sebentar untuk panggil initialize
+                new KoneksiDatabase().initialize();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -35,12 +35,32 @@ public class MainMenuPanel extends JPanel {
         add(btnExit);
 
         // === ACTION LISTENER ===
-        btnStart.addActionListener(e -> mainApp.showGamePanel());
-        btnVehicle.addActionListener(e -> mainApp.showVehicleSelect());
-        btnScore.addActionListener(e -> mainApp.showLeaderboard());
-        btnExit.addActionListener(e -> mainApp.showLoginPanel());
-    }
 
+    // 1. Tombol Start
+    btnStart.addActionListener(e -> {
+        mainApp.playButtonSound();  // <--- Masukkan ke dalam sini!
+        mainApp.showGamePanel();
+    });
+
+    // 2. Tombol Vehicle
+    btnVehicle.addActionListener(e -> {
+        mainApp.playButtonSound();  // <--- Masukkan ke dalam sini!
+        mainApp.showVehicleSelect();
+    });
+
+    // 3. Tombol Score
+    btnScore.addActionListener(e -> {
+        mainApp.playButtonSound();  // <--- Masukkan ke dalam sini!
+        mainApp.showLeaderboard();
+    });
+
+    // 4. Tombol Exit
+    btnExit.addActionListener(e -> {
+        mainApp.playButtonSound();  // <--- Masukkan ke dalam sini!
+        mainApp.showLoginPanel();
+    });
+
+    }
     private JButton createButton(String text, int y) {
         JButton btn = new JButton(text);
         btn.setFont(Theme.FONT_BOLD_24);

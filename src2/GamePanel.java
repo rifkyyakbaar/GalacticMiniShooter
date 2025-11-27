@@ -7,6 +7,7 @@ import javax.swing.*;
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private Main mainApp;
+    private KoneksiDatabase db = new KoneksiDatabase(); // Siapkan koneksi database
 
     private Timer timer;
     private Random rand = new Random();
@@ -49,6 +50,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public GamePanel(Main mainApp) {
         this.mainApp = mainApp;
+        
+        // Inisialisasi koneksi database saat game panel dibuat
+        db.initialize(); 
 
         setLayout(null);
         setFocusable(true);
@@ -56,11 +60,23 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         btnBack = new JButton("Back");
         btnBack.setBounds(20, 20, 120, 40);
-        btnBack.addActionListener(e -> mainApp.showMainMenu());
+        btnBack.setFocusable(false); // Supaya tidak mencuri fokus keyboard
+
+        btnBack.addActionListener(e -> {
+            mainApp.playButtonSound(); // Bunyi klik
+            mainApp.showMainMenu();
+        });
         add(btnBack);
 
         timer = new Timer(16, this); // 60 FPS
         timer.start();
+    }
+
+    // === PENTING: Memaksa fokus keyboard ke game saat panel muncul ===
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        requestFocusInWindow();
     }
 
     @Override
@@ -97,18 +113,21 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             Rectangle en = enemies.get(i);
             en.y += enemySpeed;
 
-            // Kena tank
+            // 1. Kena tank (Kurangi HP)
             if (en.intersects(new Rectangle(tankX, tankY, 80, 80))) {
-                hp -= 20;
+                hp -= 10;            
                 enemies.remove(i);
                 if (hp <= 0) gameOver();
             }
 
-            // Keluar layar
-            if (en.y > 720) enemies.remove(i);
+            // 2. Keluar layar / Lolos (Kurangi Score)
+            else if (en.y > 720) {   
+                score = Math.max(0, score - 5); // Kurangi 5, tapi tidak boleh minus
+                enemies.remove(i);   
+            }
         }
 
-        // === Collision Peluru → Musuh ===
+        // === Collision Peluru -> Musuh ===
         for (int i = 0; i < bullets.size(); i++) {
             Rectangle b = bullets.get(i);
             for (int j = 0; j < enemies.size(); j++) {
@@ -145,7 +164,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        // === Level Up ===
+        // === Level Up System ===
         if (score > 100 && level == 1) {
             level = 2;
             enemySpeed = 6;
@@ -187,12 +206,29 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private void gameOver() {
         timer.stop();
+        
+        // === SIMPAN DATA KE DATABASE ===
+        // Mengirim: ID User, Level, dan Score
+        if (mainApp.getCurrentUserId() != -1) {
+            db.saveScore(mainApp.getCurrentUserId(), level, score); 
+        } else {
+            System.out.println("⚠️ Warning: Score tidak disimpan (User belum login/ID -1)");
+        }
+        
         mainApp.showGameOver(score);
     }
 
     private void winGame() {
         timer.stop();
-        mainApp.showGameOver(score); // Bisa kamu ganti ke panel "You Win"
+
+        // === SIMPAN DATA KE DATABASE ===
+        if (mainApp.getCurrentUserId() != -1) {
+            db.saveScore(mainApp.getCurrentUserId(), level, score);
+        } else {
+            System.out.println("⚠️ Warning: Score tidak disimpan (User belum login/ID -1)");
+        }
+
+        mainApp.showGameOver(score);
     }
 
     @Override
@@ -236,7 +272,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             g.fillRect(boss.x, boss.y, boss.width, boss.height);
         }
 
-        // === HUD ===
+        // === HUD (Tampilan Layar) ===
         g.setColor(Color.WHITE);
         g.setFont(new Font("Poppins", Font.BOLD, 22));
         g.drawString("HP: " + hp, 20, 100);
