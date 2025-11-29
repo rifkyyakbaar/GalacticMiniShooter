@@ -13,72 +13,55 @@ public class LeaderboardPanel extends JPanel {
         this.mainApp = mainApp;
         setLayout(null);
 
-        // Load Background
-        bgImage = new ImageIcon("assets/background.png").getImage(); 
+        bgImage = new ImageIcon("assets/background2.jpg").getImage(); 
 
-        // === JUDUL ===
         JLabel title = new JLabel("TOP COMMANDERS");
         title.setFont(new Font("Poppins", Font.BOLD, 48));
         title.setForeground(Color.WHITE);
-        title.setBounds(0, 50, 1280, 60); // Full width biar bisa rata tengah
+        title.setBounds(0, 50, 1280, 60);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         add(title);
 
-        // ============================================
-        // SETUP TABEL LEADERBOARD (4 KOLOM)
-        // ============================================
-        
-        // 1. Nama Kolom
-        String[] columns = {"Player", "Level", "Score", "Waktu"};
+        // === UPDATE 5 KOLOM (DITAMBAH DURASI) ===
+        String[] columns = {"Player", "Level", "Score", "Tanggal", "Durasi"};
 
-        // 2. Ambil Data dari Database
-        db.initialize(); // Pastikan koneksi siap
+        db.initialize(); 
         ArrayList<String[]> rawData = db.getLeaderboard();
 
-        // 3. Konversi ke Array 2 Dimensi [Baris][4 Kolom]
-        String[][] data = new String[rawData.size()][4];
+        // Array 2D [Baris][5 Kolom]
+        String[][] data = new String[rawData.size()][5];
         for (int i = 0; i < rawData.size(); i++) {
             data[i] = rawData.get(i);
         }
 
-        // 4. Buat JTable
         JTable table = new JTable(data, columns);
         table.setFont(new Font("Poppins", Font.PLAIN, 16));
         table.setRowHeight(35);
-        
-        // Styling Header Tabel
         table.getTableHeader().setFont(new Font("Poppins", Font.BOLD, 18));
-        table.getTableHeader().setBackground(new Color(218, 185, 80)); // Warna Emas
+        table.getTableHeader().setBackground(new Color(218, 185, 80)); 
         table.getTableHeader().setForeground(Color.BLACK);
-        
-        // Agar tabel tidak bisa diedit
         table.setDefaultEditor(Object.class, null);
 
-        // Agar tulisan di sel tabel Rata Tengah (Center)
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) { // Loop sampai 5 kolom
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // 5. Masukkan ke ScrollPane
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBounds(340, 150, 600, 380); // Posisi Tabel di tengah
+        scroll.setBounds(240, 150, 800, 380); // Lebarin dikit tabelnya biar muat
         scroll.getViewport().setBackground(Color.WHITE); 
         add(scroll);
 
-        // ============================================
-        // TOMBOL KEMBALI
-        // ============================================
         JButton btnBack = new JButton("Kembali");
         btnBack.setFont(new Font("Poppins", Font.BOLD, 20));
-        btnBack.setBackground(new Color(218, 185, 80)); // Warna Emas
+        btnBack.setBackground(new Color(218, 185, 80)); 
         btnBack.setForeground(Color.WHITE);
         btnBack.setBounds(500, 560, 280, 50);
         btnBack.setFocusPainted(false);
         
         btnBack.addActionListener(e -> {
-            mainApp.playButtonSound(); // Bunyi Klik
+            mainApp.playButtonSound(); 
             mainApp.showMainMenu();
         });
         add(btnBack);
@@ -87,13 +70,8 @@ public class LeaderboardPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Gambar Background
-        if (bgImage != null) {
-            g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-        }
-        
-        // Kotak Transparan di belakang tabel biar manis
-        g.setColor(new Color(0, 0, 0, 150)); // Hitam transparan
-        g.fillRoundRect(300, 130, 680, 500, 40, 40);
+        if (bgImage != null) g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+        g.setColor(new Color(0, 0, 0, 150)); 
+        g.fillRoundRect(200, 130, 880, 500, 40, 40); // Lebarin background hitamnya juga
     }
 }

@@ -113,12 +113,6 @@ public class Main extends JFrame {
         repaint();
     }
 
-    public void showVehicleSelect() {
-        musicPlayer.playLoop("assets/sound war 1.wav");
-        setContentPane(new VehicleSelectPanel(this));
-        revalidate();
-        repaint();
-    }
 
     public void showLeaderboard() {
         musicPlayer.playLoop("assets/sound war 1.wav");
@@ -138,9 +132,10 @@ public class Main extends JFrame {
         repaint();
     }
 
-    public void showGameOver(int score) {
-        // Balik ke lagu Menu
-        musicPlayer.playLoop("assets/sound war 1.wav");
+   public void showGameOver(int score) {
+        // === PUTAR MUSIK GAME OVER ===
+        // SoundPlayer akan otomatis mematikan musik perang dan memutar yang ini
+        musicPlayer.playLoop("assets/gameovermusic.wav");
         
         setContentPane(new GameOverPanel(this, score));
         revalidate();
@@ -157,6 +152,8 @@ public class Main extends JFrame {
         revalidate();
         repaint();
     }
+
+    
 
     // ===========================================
     // MAIN ENTRY POINT

@@ -17,7 +17,7 @@ public class LoginPanel extends JPanel {
         this.mainApp = mainApp;
 
         // Load Gambar
-        backgroundImage = new ImageIcon("assets/background.png").getImage();
+        backgroundImage = new ImageIcon("assets/background.jpg").getImage();
         welcomeImage = new ImageIcon("assets/welcometo.png").getImage();
         logoImage = new ImageIcon("assets/tanktop.png").getImage();
 

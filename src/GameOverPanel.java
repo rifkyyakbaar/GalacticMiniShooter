@@ -5,46 +5,88 @@ public class GameOverPanel extends JPanel {
 
     private Main mainApp;
     private int score;
+    private Image bgImage; // Variabel untuk gambar background
 
     public GameOverPanel(Main mainApp, int score) {
         this.mainApp = mainApp;
         this.score = score;
 
         setLayout(null);
-        setBackground(Theme.DARK_BG);
 
+        // === LOAD GAMBAR BACKGROUND ===
+        // Pastikan nama file dan ekstensinya benar (.jpeg/.jpg/.png) di folder assets
+        bgImage = new ImageIcon("assets/background2.jpg").getImage();
+
+        // === JUDUL GAME OVER ===
         JLabel title = new JLabel("GAME OVER");
-        title.setFont(Theme.FONT_BOLD_48);
-        title.setForeground(Color.WHITE);
-        title.setBounds(470, 100, 400, 60);
+        title.setFont(new Font("Poppins", Font.BOLD, 48));
+        title.setForeground(Color.RED); // Warna Merah biar dramatis
+        // Set lebar full (1280) dan align center supaya pas di tengah
+        title.setBounds(0, 100, 1280, 60);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
         add(title);
 
-        JLabel scoreLbl = new JLabel("Score: " + score);
-        scoreLbl.setFont(Theme.FONT_BOLD_32);
+        // === SKOR ===
+        JLabel scoreLbl = new JLabel("Final Score: " + score);
+        scoreLbl.setFont(new Font("Poppins", Font.BOLD, 28));
         scoreLbl.setForeground(Color.WHITE);
-        scoreLbl.setBounds(550, 180, 300, 40);
+        scoreLbl.setBounds(0, 180, 1280, 40);
+        scoreLbl.setHorizontalAlignment(SwingConstants.CENTER);
         add(scoreLbl);
 
-        JButton retryBtn = new JButton("Retry");
-        retryBtn.setFont(Theme.FONT_BOLD_24);
-        retryBtn.setBounds(520, 280, 250, 45);
-        retryBtn.setBackground(Theme.GOLD);
-        add(retryBtn);
+        // === TOMBOL RETRY ===
+        JButton btnRetry = new JButton("Retry");
+        btnRetry.setFont(new Font("Poppins", Font.BOLD, 20));
+        btnRetry.setBackground(new Color(218, 185, 80)); // Emas
+        btnRetry.setBounds(540, 280, 200, 50);
+        btnRetry.setFocusPainted(false);
+        
+        btnRetry.addActionListener(e -> {
+            mainApp.playButtonSound(); // Bunyi klik
+            mainApp.showGamePanel(); // Main lagi
+        });
+        add(btnRetry);
 
-        JButton menuBtn = new JButton("Main Menu");
-        menuBtn.setFont(Theme.FONT_BOLD_24);
-        menuBtn.setBounds(520, 350, 250, 45);
-        menuBtn.setBackground(Theme.GOLD);
-        add(menuBtn);
+        // === TOMBOL MAIN MENU ===
+        JButton btnMenu = new JButton("Main Menu");
+        btnMenu.setFont(new Font("Poppins", Font.BOLD, 20));
+        btnMenu.setBackground(new Color(218, 185, 80));
+        btnMenu.setBounds(540, 350, 200, 50);
+        btnMenu.setFocusPainted(false);
+        
+        btnMenu.addActionListener(e -> {
+            mainApp.playButtonSound(); // Bunyi klik
+            mainApp.showMainMenu();
+        });
+        add(btnMenu);
 
-        JButton quitBtn = new JButton("Quit Game");
-        quitBtn.setFont(Theme.FONT_BOLD_24);
-        quitBtn.setBounds(520, 420, 250, 45);
-        quitBtn.setBackground(Color.GRAY);
-        add(quitBtn);
+        // === TOMBOL QUIT ===
+        JButton btnQuit = new JButton("Quit Game");
+        btnQuit.setFont(new Font("Poppins", Font.BOLD, 20));
+        btnQuit.setBackground(Color.GRAY);
+        btnQuit.setForeground(Color.WHITE);
+        btnQuit.setBounds(540, 420, 200, 50);
+        btnQuit.setFocusPainted(false);
+        
+        btnQuit.addActionListener(e -> System.exit(0));
+        add(btnQuit);
+    }
 
-        retryBtn.addActionListener(e -> mainApp.showGamePanel());
-        menuBtn.addActionListener(e -> mainApp.showMainMenu());
-        quitBtn.addActionListener(e -> System.exit(0));
+    // === BAGIAN MENGGAMBAR BACKGROUND ===
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // 1. Gambar Background
+        if (bgImage != null) {
+            g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
+
+        // 2. Lapisan Hitam Transparan (Supaya tulisan jelas)
+        g.setColor(new Color(0, 0, 0, 200)); // Hitam pekat transparan (0-255)
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 }

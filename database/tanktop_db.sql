@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 27 Nov 2025 pada 21.10
+-- Waktu pembuatan: 29 Nov 2025 pada 16.49
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -45,8 +45,30 @@ CREATE TABLE `scores` (
   `user_id` int(11) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
   `level` int(11) DEFAULT 1,
-  `score_date` timestamp NOT NULL DEFAULT current_timestamp()
+  `score_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `play_duration` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `scores`
+--
+
+INSERT INTO `scores` (`id`, `user_id`, `score`, `level`, `score_date`, `play_duration`) VALUES
+(1, 2, 450, 3, '2025-11-27 20:29:10', 0),
+(2, 2, 460, 3, '2025-11-28 18:15:55', 0),
+(3, 2, 450, 3, '2025-11-28 18:22:01', 0),
+(4, 2, 765, 3, '2025-11-28 18:30:32', 0),
+(5, 2, 750, 3, '2025-11-28 18:51:07', 0),
+(6, 2, 765, 3, '2025-11-28 18:57:53', 0),
+(7, 2, 270, 3, '2025-11-28 19:02:31', 0),
+(8, 2, 765, 3, '2025-11-28 19:14:29', 0),
+(9, 2, 770, 3, '2025-11-28 19:27:56', 0),
+(10, 2, 770, 3, '2025-11-28 19:43:06', 0),
+(11, 2, 760, 3, '2025-11-28 19:47:38', 0),
+(12, 2, 765, 3, '2025-11-28 19:50:59', 0),
+(13, 2, 250, 3, '2025-11-28 19:57:33', 0),
+(14, 2, 760, 3, '2025-11-28 19:59:22', 0),
+(15, 2, 780, 3, '2025-11-29 15:43:24', 0);
 
 -- --------------------------------------------------------
 
@@ -106,7 +128,7 @@ ALTER TABLE `leaderboard`
 -- AUTO_INCREMENT untuk tabel `scores`
 --
 ALTER TABLE `scores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
