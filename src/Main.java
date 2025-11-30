@@ -16,7 +16,7 @@ public class Main extends JFrame {
     // Setter: Dipanggil di LoginPanel saat login berhasil
     public void setCurrentUser(int id) {
         this.currentUserId = id;
-    }
+    }   
 
     // Getter: Dipanggil di GamePanel saat Game Over untuk saveScore
     public int getCurrentUserId() {
