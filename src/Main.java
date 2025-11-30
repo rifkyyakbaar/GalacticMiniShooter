@@ -4,11 +4,6 @@ import javax.swing.*;
 
 public class Main extends JFrame {
 
-    // ===========================================
-    // Variable Global
-    // ===========================================
-    private String selectedVehicle = "Tank_Default";
-    
     // Player Musik & File
     private SoundPlayer musicPlayer = new SoundPlayer(); 
     // Pastikan nama file musik ini ada di folder assets
@@ -29,13 +24,6 @@ public class Main extends JFrame {
     }
     // ========================================
 
-    public String getSelectedVehicle() {
-        return selectedVehicle;
-    }
-
-    public void setSelectedVehicle(String v) {
-        selectedVehicle = v;
-    }
 
     // ===========================================
     // Constructor (Dipanggil saat new Main())

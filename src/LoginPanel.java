@@ -19,7 +19,6 @@ public class LoginPanel extends JPanel {
         // Load Gambar
         backgroundImage = new ImageIcon("assets/background.jpg").getImage();
         welcomeImage = new ImageIcon("assets/welcometo.png").getImage();
-        logoImage = new ImageIcon("assets/tanktop.png").getImage();
 
         setLayout(null);
 
@@ -126,12 +125,26 @@ public class LoginPanel extends JPanel {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
 
-        // Gambar Header
+        // Gambar Header (Welcome To)
         if (welcomeImage != null) {
-            g.drawImage(welcomeImage, 140, 60, 1000, 100, this);
-        }
-        if (logoImage != null) {
-            g.drawImage(logoImage, 260, 170, 745, 160, this);
+            // 1. Ambil ukuran asli gambar
+            int imgWidth = welcomeImage.getWidth(null);
+            int imgHeight = welcomeImage.getHeight(null);
+
+            // 2. Tentukan lebar yang kamu mau (misal tetap 1000 biar lebar)
+            int targetWidth = 1000; 
+
+            // 3. Hitung tinggi otomatis (Rumus Matematika Rasio)
+            // Tinggi Baru = (Lebar Baru * Tinggi Asli) / Lebar Asli
+            int targetHeight = (targetWidth * imgHeight) / imgWidth;
+
+            // 4. Gambar dengan ukuran yang sudah dihitung (biar ga gepeng)
+            // X tetap 140 (atau bisa diatur biar tengah), Y tetap 60
+            
+            // Agar posisi X pas di tengah layar (Optional, biar lebih rapi)
+            int centerX = (getWidth() - targetWidth) / 2; 
+            
+            g.drawImage(welcomeImage, centerX, 60, targetWidth, targetHeight, this);
         }
 
         // Kotak Putih Transparan di belakang form
